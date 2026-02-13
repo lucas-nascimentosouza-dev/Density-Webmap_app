@@ -1,0 +1,21 @@
+**CUSTOMIZAÇÃO 2**
+
+OK -Atualização automática de 1 em 1 min 
+OK - DEIXAR UMA DATA ON LINE AMOSTRA
+OK -  Ajustar e mostrar melhor a quantidade no mapa
+OK - Escolher o nome mais adequado pro Mapa (Pessoa em situação de Rua - ABORDAGEM)
+OK - Mostrar total geral no topo
+OK - 📊 Gráfico de barra com percentual que funcione como legenda quantitativa 
+	com filtro: por "raça/cor"; por "faixa etária"; por "gênero"
+OK - 📊 Criar gráfico de colunas com botão que filtre "Migrantes"
+OK - 🖱 Mostra dados ao passar o mouse - nome, trecho ou não, e lat/long
+OK - Logotipos e msgs finais (ajustes)
+
+________________________________________________________________________
+
+
+- alternar mapa claro/escuro automaticamente
+- criar botão “🔍 Tela cheia”
+- Criar um botão que filtre local diurno e noturno
+- Espaço para comentários p/ usuários com e-mail logado
+
