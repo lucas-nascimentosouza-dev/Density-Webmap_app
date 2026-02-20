@@ -19,3 +19,17 @@ ________________________________________________________________________
 - Criar um botão que filtre local diurno e noturno
 - Espaço para comentários p/ usuários com e-mail logado
 
+
+
+instalados:
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
+git 
+
+git config --global user.name "lucas-nascimentosouza-dev"
+git config --global user.email "lucas-nascimento.souza@unesp.br"
+

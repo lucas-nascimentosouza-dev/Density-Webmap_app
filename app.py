@@ -86,14 +86,12 @@ def carregar_dados():
     "Não": "Não",
     "nao": "Não"
 })
-    
     return df
     
 # ===============================
 # CARREGAR DADOS
 # ===============================
 df = carregar_dados()
-
 
 # MAPA
 
@@ -125,6 +123,18 @@ fig.add_scattermap(
         "<extra></extra>"
 )
 
+from io import BytesIO
+
+# EXPORTAÇÃO PARA EXCEL
+
+def gerar_excel(dataframe):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        dataframe.to_excel(writer, index=False, sheet_name='Dados')
+    return output.getvalue()
+
+excel_file = gerar_excel(df)
+
 # LEGENDA DE INTENSIDADE RELATIVA
 
 fig.update_layout(
@@ -148,7 +158,14 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
-info_col, kpi_col = st.columns([4.5, 2.3])
+st.download_button(
+    label="📥 Baixar",
+    data=excel_file,
+    file_name="base_pessoas_situacao_rua.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
+info_col, kpi_col = st.columns([3.5, 2])
 
 # ================================
 # INFO Nº TOTAL REGISTRS + TEXTO EXPLICATIVO 
@@ -166,7 +183,7 @@ with info_col:
         padding:15px;
         background-color:#fafafa;
         margin-top:20px;
-        max-width:800px;
+        max-width:900px;
     ">
         <h4 style="display:flex; align-items:center; gap:10px;">
             <img src="https://raw.githubusercontent.com/lucas-nascimentosouza-dev/MEUS_SVGs/refs/heads/main/electoral_17977484.svg" width="56">
@@ -344,10 +361,10 @@ st.write("")  # espaço vazio
 col_space1, col1, col2, col3, col_space2 = st.columns([3.9,0.7,0.7,0.7,0.1])
 
 with col1:
-    st.image("LOGO_NAIA.jpg", width=120)
+    st.image("LOGO_NAIA.jpg", width=130)
 
 with col2:
-    st.image("LOGO_UNESP_preto.png", width=120)
+    st.image("LOGO_UNESP_preto.png", width=130)
 
 with col3:
-    st.image("LOGO_SMADS_2.jpeg", width=120)
+    st.image("LOGO_SMADS_2.jpeg", width=130)
