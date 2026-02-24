@@ -99,11 +99,26 @@ fig = px.density_map(
     df,
     lat="latitude",
     lon="longitude",
+    map_style="white-bg",
     z="quantidade",
     radius=15,
     zoom=12,
-    map_style="carto-positron",
-    color_continuous_scale="Inferno"   
+    color_continuous_scale="Inferno",
+)
+
+# CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
+
+fig.update_layout(
+    map_style="white-bg",
+    map_layers=[
+        {
+            "below": "traces",
+            "sourcetype": "raster",
+            "source": [
+                "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+            ]
+        }
+    ]
 )
 
 # MOSTRAR OS DADOS AO PASSAR O MOUSE NO MAPA (ISTO É UM SCATTERMAP INVISÍVEL)
@@ -122,18 +137,6 @@ fig.add_scattermap(
         "Lon: %{lon:.4f}<br>" +
         "<extra></extra>"
 )
-
-from io import BytesIO
-
-# EXPORTAÇÃO PARA EXCEL
-
-def gerar_excel(dataframe):
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
-        dataframe.to_excel(writer, index=False, sheet_name='Dados')
-    return output.getvalue()
-
-excel_file = gerar_excel(df)
 
 # LEGENDA DE INTENSIDADE RELATIVA
 
@@ -156,16 +159,59 @@ fig.update_layout(
     height=550
 )
 
+from io import BytesIO
+
+# EXPORTAÇÃO PARA EXCEL
+
+def gerar_excel(dataframe):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        dataframe.to_excel(writer, index=False, sheet_name='Dados')
+    return output.getvalue()
+
+excel_file = gerar_excel(df)
+
 st.plotly_chart(fig, use_container_width=True)
 
-st.download_button(
-    label="📥 Baixar",
-    data=excel_file,
-    file_name="base_pessoas_situacao_rua.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
+import base64
 
-info_col, kpi_col = st.columns([3.5, 2])
+# Converte o arquivo Excel já gerado para base64
+
+b64_excel = base64.b64encode(excel_file).decode()
+
+st.markdown(f"""
+<style>
+.download-btn {{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #1f4e79;
+    color: white !important;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.2s ease-in-out;
+}}
+.download-btn:hover {{
+    background-color: #163a5c;
+    transform: translateY(-1px);
+}}
+.download-btn img {{
+    filter: brightness(0) invert(1);
+}}
+</style>
+
+<a download="base_pessoas_situacao_rua.xlsx"
+   href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64_excel}"
+   class="download-btn">
+   <img src="https://raw.githubusercontent.com/lucas-nascimentosouza-dev/MEUS_SVGs/refs/heads/main/cloud-arrow-up-svgrepo-com.svg" width="18">
+   Dados
+</a>
+""", unsafe_allow_html=True)
+
+info_col, kpi_col = st.columns([3, 1.5])
 
 # ================================
 # INFO Nº TOTAL REGISTRS + TEXTO EXPLICATIVO 
@@ -361,10 +407,10 @@ st.write("")  # espaço vazio
 col_space1, col1, col2, col3, col_space2 = st.columns([3.9,0.7,0.7,0.7,0.1])
 
 with col1:
-    st.image("LOGO_NAIA.jpg", width=130)
+    st.image("LOGO_NAIA.jpg", width=150)
 
 with col2:
-    st.image("LOGO_UNESP_preto.png", width=130)
+    st.image("LOGO_UNESP_preto.png", width=150)
 
 with col3:
-    st.image("LOGO_SMADS_2.jpeg", width=130)
+    st.image("LOGO_SMADS_2.jpeg", width=150)
