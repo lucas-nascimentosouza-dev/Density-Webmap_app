@@ -13,13 +13,21 @@ st.markdown("""
 /* MOBILE ONLY */
 @media (max-width: 768px) {
 
+    /* Remove botões do Plotly */
+    .modebar {
+        display: none !important;
+    }
+
+    /* Ajusta padding lateral */
     .block-container {
         padding-left: 1rem !important;
         padding-right: 1rem !important;
     }
 
+    /* Ajusta botão download */
     .download-btn {
         width: 85% !important;
+        margin: 0 auto !important;
         justify-content: center !important;
     }
 
@@ -133,13 +141,18 @@ fig = px.density_map(
     color_continuous_scale="Inferno",
 )
 
+fig.update_layout(
+    margin=dict(l=0, r=0, t=0, b=0),
+    height=450
+)
+
 #AJUSTE DA POSIÇÃO DA LEGENDA DE INTENSIDADE RELATIVA
 
 fig.update_layout(
     coloraxis_colorbar=dict(
-        thickness=15,      # largura da barra (padrão ~30)
+        thickness=17,      # largura da barra (padrão ~30)
         len=0.75,          # altura relativa
-        x=1.02,            # joga mais pra direita
+        x=1.03,            # joga mais pra direita
         xanchor="left"
     )
 )
@@ -192,10 +205,6 @@ fig.update_layout(
     )
 )
 
-fig.update_layout(
-    margin=dict(l=0, r=0, t=0, b=0),
-    height=450
-)
 
 from io import BytesIO
 
@@ -405,7 +414,7 @@ for i, row in df_percentual.iterrows():
 fig.update_layout(
     barmode="stack",
     height=160,
-    margin=dict(l=10, r=10, t=60, b=55),
+    margin=dict(l=10, r=10, t=60, b=60),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
