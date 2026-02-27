@@ -26,7 +26,7 @@ st.markdown("""
 
     /* Ajusta botão download */
     .download-btn {
-        width: 85% !important;
+        width: 60% !important;
         margin: 0 auto !important;
         justify-content: center !important;
     }
@@ -199,8 +199,10 @@ fig.add_scattermap(
         "<extra></extra>"
 )
 
-# LEGENDA DE INTENSIDADE RELATIVA
-#AJUSTE DA POSIÇÃO DA LEGENDA  mobile ou desktop (RESPONSIVO)
+
+# ==============================
+# LEGENDA RESPONSIVA (REAL)
+# ==============================
 
 is_mobile = False
 
@@ -217,16 +219,12 @@ if is_mobile:
             cmax=df["quantidade"].max(),
             colorscale="Inferno",
             colorbar=dict(
-                title="Intensidade relativa",
-                tickmode="array",
-                tickvals=[0, 0.5, 1],
-                ticktext=["Baixa", "Média", "Alta"],
-                orientation="h",
-                thickness=12,
-                len=0.8,
-                x=0.5,
-                xanchor="center",
-                y=-0.2
+                title="Intensidade",
+                thickness=10,      # mais fina
+                len=0.45,          # bem menor
+                x=1.15,            # joga mais pra direita
+                xanchor="left",
+                y=0.5
             )
         )
     )
@@ -238,9 +236,6 @@ else:
             colorscale="Inferno",
             colorbar=dict(
                 title="Intensidade relativa",
-                tickmode="array",
-                tickvals=[0, 0.5, 1],
-                ticktext=["Baixa", "Média", "Alta"],
                 thickness=18,
                 len=0.75,
                 x=1.02,
@@ -265,7 +260,7 @@ excel_file = gerar_excel(df)
 
 import base64
 
-# Converte o arquivo Excel já gerado para base64
+# BOTÃO DOWNLOAD - Converte o arquivo Excel já gerado para base64
 
 b64_excel = base64.b64encode(excel_file).decode()
 
