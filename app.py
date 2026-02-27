@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
-# AJUSTE PARA MOBILE (RESPONSIVO)
+# AJUSTE PARA MOBILE (RESPONSIVO) CSS
 
 st.markdown("""
 <style>
@@ -19,7 +19,7 @@ st.markdown("""
     }
 
     .download-btn {
-        width: 100% !important;
+        width: 85% !important;
         justify-content: center !important;
     }
 
@@ -131,6 +131,17 @@ fig = px.density_map(
     radius=15,
     zoom=12,
     color_continuous_scale="Inferno",
+)
+
+#AJUSTE DA POSIÇÃO DA LEGENDA DE INTENSIDADE RELATIVA
+
+fig.update_layout(
+    coloraxis_colorbar=dict(
+        thickness=15,      # largura da barra (padrão ~30)
+        len=0.75,          # altura relativa
+        x=1.02,            # joga mais pra direita
+        xanchor="left"
+    )
 )
 
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
@@ -279,6 +290,10 @@ with info_col:
     unsafe_allow_html=True
 )
 
+# ESPAÇO (NO MOBILE) ENTRE O BLOCO DE INFORMAÇÕES E O GRÁFICO DE BARRAS
+
+st.markdown("<div style='margin-top:40px;'></div>", unsafe_allow_html=True)
+
 with kpi_col:
 
 # Padroniza
@@ -389,8 +404,8 @@ for i, row in df_percentual.iterrows():
 
 fig.update_layout(
     barmode="stack",
-    height=90,
-    margin=dict(l=10, r=10, t=40, b=10),
+    height=160,
+    margin=dict(l=10, r=10, t=60, b=50),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
@@ -403,14 +418,17 @@ fig.update_layout(
     )
 )
 
-st.plotly_chart(fig, use_container_width=True)
+# OCULTA OPÇÕES pan, zoom, home, fullscreen (BOTOES EM CIMA DO GRÁFICO QUE NÃO SERVEM PRA NADA E DIFUCULTAM VIZUALIZAÇÃO)
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
 
-st.write("")  # espaço vazio
+# ESPAÇO VAZIO ENTRE O GRÁFICO DE BARRAS DE PERFIL E O BLOCO DE INFORMAÇÕES EXTRA (NO MOBILE)
+st.write("")  
 
-# ===============================
 # INFO EXTRA
-# ===============================
-
 st.caption(f"Atualização diária automática: a cada 1 hora")
 
 st.markdown(
