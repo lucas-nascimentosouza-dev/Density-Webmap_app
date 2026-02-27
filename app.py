@@ -52,6 +52,27 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# Detectar largura da tela
+st.markdown("""
+<script>
+function sendWidth() {
+    const width = window.innerWidth;
+    const streamlitDoc = window.parent.document;
+    const input = streamlitDoc.querySelector('input[data-testid="mobile-width"]');
+    if (input) {
+        input.value = width;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+}
+window.addEventListener("load", sendWidth);
+window.addEventListener("resize", sendWidth);
+</script>
+""", unsafe_allow_html=True)
+
+mobile_width = st.text_input("", key="mobile-width")
+
+
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -146,16 +167,38 @@ fig.update_layout(
     height=450
 )
 
-#AJUSTE DA POSIÇÃO DA LEGENDA DE INTENSIDADE RELATIVA
+#AJUSTE DA POSIÇÃO DA LEGENDA  mobile ou desktop (RESPONSIVO)
 
-fig.update_layout(
-    coloraxis_colorbar=dict(
-        thickness=17,      # largura da barra (padrão ~30)
-        len=0.75,          # altura relativa
-        x=1.03,            # joga mais pra direita
-        xanchor="left"
+is_mobile = False
+
+try:
+    if mobile_width and int(mobile_width) < 768:
+        is_mobile = True
+except:
+    pass
+
+if is_mobile:
+    # MOBILE → horizontal
+    fig.update_layout(
+        coloraxis_colorbar=dict(
+            orientation="h",
+            thickness=12,
+            len=0.8,
+            x=0.5,
+            xanchor="center",
+            y=-0.15
+        )
     )
-)
+else:
+    # DESKTOP → vertical
+    fig.update_layout(
+        coloraxis_colorbar=dict(
+            thickness=18,
+            len=0.75,
+            x=1.02,
+            xanchor="left"
+        )
+    )
 
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
 
