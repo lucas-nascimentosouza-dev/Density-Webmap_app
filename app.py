@@ -5,6 +5,33 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
+# AJUSTE PARA MOBILE (RESPONSIVO)
+
+st.markdown("""
+<style>
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+
+    .block-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .download-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    h2 {
+        font-size: 22px !important;
+    }
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 # ===============================
 # CONFIGURAÇÕES
 # ===============================
@@ -156,7 +183,7 @@ fig.update_layout(
 
 fig.update_layout(
     margin=dict(l=0, r=0, t=0, b=0),
-    height=550
+    height=450
 )
 
 from io import BytesIO
@@ -393,10 +420,10 @@ st.markdown(
         padding:5px;
         border-radius:5px;
         color:#155724;
-        font-weight:320;
+        font-weight:260;
     ">
-        <span style="font-size:28px;">®</span>
-        Criação do Webmap por Lucas Nascimento
+        <span style="font-size:20px;">®</span>
+        Webmap criado por Lucas Nascimento
     </div>
     """,
     unsafe_allow_html=True
