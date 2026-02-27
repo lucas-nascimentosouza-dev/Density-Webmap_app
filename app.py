@@ -405,7 +405,7 @@ for i, row in df_percentual.iterrows():
 fig.update_layout(
     barmode="stack",
     height=160,
-    margin=dict(l=10, r=10, t=60, b=50),
+    margin=dict(l=10, r=10, t=60, b=55),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
