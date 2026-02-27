@@ -167,39 +167,6 @@ fig.update_layout(
     height=450
 )
 
-#AJUSTE DA POSIÇÃO DA LEGENDA  mobile ou desktop (RESPONSIVO)
-
-is_mobile = False
-
-try:
-    if mobile_width and int(mobile_width) < 768:
-        is_mobile = True
-except:
-    pass
-
-if is_mobile:
-    # MOBILE → horizontal
-    fig.update_layout(
-        coloraxis_colorbar=dict(
-            orientation="h",
-            thickness=12,
-            len=0.8,
-            x=0.5,
-            xanchor="center",
-            y=-0.15
-        )
-    )
-else:
-    # DESKTOP → vertical
-    fig.update_layout(
-        coloraxis_colorbar=dict(
-            thickness=18,
-            len=0.75,
-            x=1.02,
-            xanchor="left"
-        )
-    )
-
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
 
 fig.update_layout(
@@ -233,26 +200,60 @@ fig.add_scattermap(
 )
 
 # LEGENDA DE INTENSIDADE RELATIVA
+#AJUSTE DA POSIÇÃO DA LEGENDA  mobile ou desktop (RESPONSIVO)
 
-fig.update_layout(
-    coloraxis=dict(
-        cmin=0,
-        cmax=df["quantidade"].max(),
-        colorscale="Inferno",
-        colorbar=dict(
-            title="Intensidade relativa",
-            tickmode="array",
-            tickvals=[0, 0.5, 1],
-            ticktext=["Baixa", "Média", "Alta"]
+is_mobile = False
+
+try:
+    if mobile_width and int(mobile_width) < 768:
+        is_mobile = True
+except:
+    pass
+
+if is_mobile:
+    fig.update_layout(
+        coloraxis=dict(
+            cmin=0,
+            cmax=df["quantidade"].max(),
+            colorscale="Inferno",
+            colorbar=dict(
+                title="Intensidade relativa",
+                tickmode="array",
+                tickvals=[0, 0.5, 1],
+                ticktext=["Baixa", "Média", "Alta"],
+                orientation="h",
+                thickness=12,
+                len=0.8,
+                x=0.5,
+                xanchor="center",
+                y=-0.2
+            )
         )
     )
-)
+else:
+    fig.update_layout(
+        coloraxis=dict(
+            cmin=0,
+            cmax=df["quantidade"].max(),
+            colorscale="Inferno",
+            colorbar=dict(
+                title="Intensidade relativa",
+                tickmode="array",
+                tickvals=[0, 0.5, 1],
+                ticktext=["Baixa", "Média", "Alta"],
+                thickness=18,
+                len=0.75,
+                x=1.02,
+                xanchor="left"
+            )
+        )
+    )
 
+st.plotly_chart(fig, use_container_width=True)
 
 from io import BytesIO
 
 # EXPORTAÇÃO PARA EXCEL
-
 def gerar_excel(dataframe):
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
@@ -261,7 +262,6 @@ def gerar_excel(dataframe):
 
 excel_file = gerar_excel(df)
 
-st.plotly_chart(fig, use_container_width=True)
 
 import base64
 
