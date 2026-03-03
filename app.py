@@ -26,7 +26,7 @@ st.markdown("""
 
     /* Ajusta botão download */
     .download-btn {
-        width: 60% !important;
+        width: 40% !important;
         margin: 0 auto !important;
         justify-content: center !important;
     }
@@ -51,26 +51,6 @@ st.set_page_config(
     page_title="Mapa - Pessoas em Situação de Rua",
     layout="wide"
 )
-
-
-# Detectar largura da tela
-st.markdown("""
-<script>
-function sendWidth() {
-    const width = window.innerWidth;
-    const streamlitDoc = window.parent.document;
-    const input = streamlitDoc.querySelector('input[data-testid="mobile-width"]');
-    if (input) {
-        input.value = width;
-        input.dispatchEvent(new Event("input", { bubbles: true }));
-    }
-}
-window.addEventListener("load", sendWidth);
-window.addEventListener("resize", sendWidth);
-</script>
-""", unsafe_allow_html=True)
-
-mobile_width = st.text_input("", key="mobile-width")
 
 
 from datetime import datetime
@@ -199,43 +179,21 @@ fig.add_scattermap(
         "<extra></extra>"
 )
 
-
 # ==============================
-# LEGENDA RESPONSIVA (REAL)
+# LEGENDA RELATIVA 
 # ==============================
 
-is_mobile = False
 
-try:
-    if mobile_width and int(mobile_width) < 768:
-        is_mobile = True
-except:
-    pass
-
-if is_mobile:
-    fig.update_layout(
-        coloraxis=dict(
-            cmin=0,
-            cmax=df["quantidade"].max(),
-            colorscale="Inferno",
-            colorbar=dict(
-                title="Intensidade",
-                thickness=10,      # mais fina
-                len=0.45,          # bem menor
-                x=1.15,            # joga mais pra direita
-                xanchor="left",
-                y=0.5
-            )
-        )
-    )
-else:
-    fig.update_layout(
+fig.update_layout(
         coloraxis=dict(
             cmin=0,
             cmax=df["quantidade"].max(),
             colorscale="Inferno",
             colorbar=dict(
                 title="Intensidade relativa",
+                tickmode="array",
+                tickvals=[0, 0.5, 1],
+                ticktext=["Baixa", "Média", "Alta"],
                 thickness=18,
                 len=0.75,
                 x=1.02,
@@ -452,7 +410,7 @@ for i, row in df_percentual.iterrows():
 fig.update_layout(
     barmode="stack",
     height=160,
-    margin=dict(l=10, r=10, t=60, b=60),
+    margin=dict(l=10, r=10, t=100, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
@@ -476,7 +434,7 @@ st.plotly_chart(
 st.write("")  
 
 # INFO EXTRA
-st.caption(f"Atualização diária automática: a cada 1 hora")
+st.caption(f"Atualização diária automática: a cada 1 minuto")
 
 st.markdown(
     """
@@ -493,8 +451,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-st.write("")  # espaço vazio
 
 col_space1, col1, col2, col3, col_space2 = st.columns([3.9,0.7,0.7,0.7,0.1])
 
