@@ -185,19 +185,22 @@ fig.add_scattermap(
 
 
 fig.update_layout(
+        margin=dict(r=0),  # 👈 reduz margem direita
+
         coloraxis=dict(
             cmin=0,
             cmax=df["quantidade"].max(),
             colorscale="Inferno",
             colorbar=dict(
-                title="Legenda",
+                title="Intensidade",
                 tickmode="array",
                 tickvals=[0, 0.5, 1],
                 ticktext=["Baixa", "Média", "Alta"],
                 thickness=18,
                 len=0.75,
-                x=1.0,
-                xanchor="left"
+                x=1.01,
+                xanchor="left",
+                y=0.5
             )
         )
     )
