@@ -144,7 +144,7 @@ fig = px.density_map(
 
 fig.update_layout(
     margin=dict(l=0, r=0, t=0, b=0),
-    height=450
+    height=500
 )
 
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
@@ -190,13 +190,13 @@ fig.update_layout(
             cmax=df["quantidade"].max(),
             colorscale="Inferno",
             colorbar=dict(
-                title="Intensidade relativa",
+                title="Legenda",
                 tickmode="array",
                 tickvals=[0, 0.5, 1],
                 ticktext=["Baixa", "Média", "Alta"],
                 thickness=18,
                 len=0.75,
-                x=1.02,
+                x=1.0,
                 xanchor="left"
             )
         )
@@ -254,7 +254,7 @@ st.markdown(f"""
 </a>
 """, unsafe_allow_html=True)
 
-info_col, kpi_col = st.columns([3, 1.5])
+info_col, kpi_col = st.columns([2.5, 1.2])
 
 # ================================
 # INFO Nº TOTAL REGISTRS + TEXTO EXPLICATIVO 
@@ -451,6 +451,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+st.write("")  # Espaço entre o rodapé e os logos
 
 col_space1, col1, col2, col3, col_space2 = st.columns([3.9,0.7,0.7,0.7,0.1])
 
