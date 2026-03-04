@@ -1,12 +1,18 @@
 
 import streamlit as st
+
+st.set_page_config(
+
+    page_title="Mapa - Pessoas em Situação de Rua",
+    layout="wide"
+)
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
 # AJUSTE PARA MOBILE (RESPONSIVO) CSS
-
 st.markdown("""
 <style>
 
@@ -45,13 +51,6 @@ st.markdown("""
 # ===============================
 URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSarjsfOxs3BgjK1sF8FWv8ExKj34P3k2AgjuC-4XKhrwK7xrjorPxCWeUmA4Z4JtKD_btojUjN8ZvS/pub?output=csv"
 TEMPO_ATUALIZACAO = 60  # segundos
-
-st.set_page_config(
-
-    page_title="Mapa - Pessoas em Situação de Rua",
-    layout="wide"
-)
-
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -183,9 +182,8 @@ fig.add_scattermap(
 # LEGENDA RELATIVA 
 # ==============================
 
-
 fig.update_layout(
-        margin=dict(r=0),  # 👈 reduz margem direita
+        margin=dict(l=0, r=0, t=0, b=0),  # 👈 reduz margem 
 
         coloraxis=dict(
             cmin=0,
