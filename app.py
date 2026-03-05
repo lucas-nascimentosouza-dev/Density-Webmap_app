@@ -12,6 +12,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
+from streamlit_js_eval import streamlit_js_eval
+
+screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key='SCR')
+
+is_mobile = screen_width and screen_width < 768
+
 # AJUSTE PARA MOBILE (RESPONSIVO) CSS
 st.markdown("""
 <style>
@@ -129,7 +135,6 @@ def carregar_dados():
 df = carregar_dados()
 
 # MAPA
-
 fig = px.density_map(
     df,
     lat="latitude",
@@ -179,31 +184,48 @@ fig.add_scattermap(
 )
 
 # ==============================
-# LEGENDA RELATIVA 
+# LEGENDA RELATIVA mobile  x desktop
 # ==============================
 
-fig.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0),  # 👈 reduz margem 
+if is_mobile:
 
-        coloraxis=dict(
-            cmin=0,
-            cmax=df["quantidade"].max(),
-            colorscale="Inferno",
-            colorbar=dict(
-                title="Intensidade",
-                tickmode="array",
-                tickvals=[0, 0.5, 1],
-                ticktext=["Baixa", "Média", "Alta"],
-                thickness=18,
-                len=0.75,
-                x=1.01,
-                xanchor="left",
-                y=0.5
-            )
-        )
+    legenda_config = dict(
+        title="Intensidade",
+        thickness=12,
+        len=0.55,
+        tickmode="array",
+        tickvals=[0, 0.5, 1],
+        ticktext=["Baixa", "Média", "Alta"],
     )
 
+else:
+
+    legenda_config = dict(
+        title="Intensidade Relativa",
+        thickness=18,
+        len=0.75,
+        tickmode="array",
+        tickvals=[0, 0.5, 1],
+        ticktext=["Baixa", "Média", "Alta"],
+        x=1.00,
+        xanchor="left",
+        y=0.5
+    )
+
+fig.update_layout(
+    margin=dict(l=0, r=0, t=0, b=0),
+
+    coloraxis=dict(
+        cmin=0,
+        cmax=df["quantidade"].max(),
+        colorscale="Inferno",
+        colorbar=legenda_config
+    )
+)
+
 st.plotly_chart(fig, use_container_width=True)
+
+
 
 from io import BytesIO
 
