@@ -191,8 +191,8 @@ if is_mobile:
 
     legenda_config = dict(
         title="Intensidade",
-        thickness=12,
-        len=0.55,
+        thickness=9,
+        len=0.45,
         tickmode="array",
         tickvals=[0, 0.5, 1],
         ticktext=["Baixa", "Média", "Alta"],
@@ -202,8 +202,8 @@ else:
 
     legenda_config = dict(
         title="Intensidade Relativa",
-        thickness=18,
-        len=0.75,
+        thickness=16,
+        len=0.68,
         tickmode="array",
         tickvals=[0, 0.5, 1],
         ticktext=["Baixa", "Média", "Alta"],
