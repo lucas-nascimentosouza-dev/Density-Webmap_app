@@ -320,7 +320,7 @@ with info_col:
 
 # ESPAÇO (NO MOBILE) ENTRE O BLOCO DE INFORMAÇÕES E O GRÁFICO DE BARRAS
 
-st.markdown("<div style='margin-top:40px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='margin-top:4px;'></div>", unsafe_allow_html=True)
 
 with kpi_col:
 
@@ -387,6 +387,12 @@ perfil = st.radio(
     horizontal=True
 )
 
+# AJUSTE DE MARGEM ENTRE O RADIO E O GRÁFICO DE BARRAS (NO MOBILE AUMENTA, NO DESKTOP DIMINUI)
+if is_mobile:
+    st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)
+
 mapa_colunas = {
     "Gênero": "genero",
     "Raça/Cor": "raca_cor",
@@ -398,7 +404,7 @@ titulo = f"Distribuição por {perfil}"
 
 df_percentual = (
     df[df[coluna].notna()]
-    .groupby(coluna)
+    .groupby(coluna) 
     .size()
     .reset_index(name="quantidade")
 )
@@ -429,20 +435,27 @@ for i, row in df_percentual.iterrows():
             marker_color=cores_padrao[i % len(cores_padrao)]
         )
     )
+# AJUSTE DA MARGEM
+if is_mobile:
+    margin_top = 80
+else:
+    margin_top = 30
+
+legend_y = 1.15 if is_mobile else 1.05
 
 fig.update_layout(
     barmode="stack",
-    height=160,
-    margin=dict(l=10, r=10, t=100, b=20),
+    height=140 if is_mobile else 85,
+    margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
     legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.2,
-        xanchor="center",
-        x=0.5
+    orientation="h",
+    yanchor="bottom",
+    y=legend_y,
+    xanchor="center",
+    x=0.5
     )
 )
 
