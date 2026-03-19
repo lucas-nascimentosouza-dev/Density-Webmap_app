@@ -451,7 +451,7 @@ for i, row in df_percentual.iterrows():
     )
 # AJUSTE DA MARGEM
 if is_mobile:
-    margin_top = 125
+    margin_top = 100
 else:
     margin_top = 60
 
@@ -459,7 +459,7 @@ legend_y = 1.15 if is_mobile else 1.05
 
 fig.update_layout(
     barmode="stack",
-    height=140 if is_mobile else 115,
+    height=115 if is_mobile else 115,
     margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
