@@ -18,12 +18,32 @@ screen_width = streamlit_js_eval(js_expressions='window.innerWidth', key='SCR')
 
 is_mobile = screen_width and screen_width < 768
 
+# =============================
 # AJUSTE PARA MOBILE (RESPONSIVO) CSS
+# =============================
 st.markdown("""
 <style>
 
-/* MOBILE ONLY */
+/* ===== AJUSTE GLOBAL RADIO (DESKTOP + MOBILE) ===== */
+div[role="radiogroup"] {
+    margin-bottom: -12px;
+}
+
+.stRadio > div {
+    gap: 0.3rem;
+}
+
+.stRadio label {
+    margin-bottom: 0px !important;
+}
+
+/* ===== MOBILE ONLY ===== */
 @media (max-width: 768px) {
+
+    /* Ajuste específico mobile (menos agressivo) */
+    div[role="radiogroup"] {
+        margin-bottom: -4px;
+    }
 
     /* Remove botões do Plotly */
     .modebar {
@@ -387,12 +407,6 @@ perfil = st.radio(
     horizontal=True
 )
 
-# AJUSTE DE MARGEM ENTRE O RADIO E O GRÁFICO DE BARRAS (NO MOBILE AUMENTA, NO DESKTOP DIMINUI)
-if is_mobile:
-    st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
-else:
-    st.markdown("<div style='margin-top:-10px'></div>", unsafe_allow_html=True)
-
 mapa_colunas = {
     "Gênero": "genero",
     "Raça/Cor": "raca_cor",
@@ -439,13 +453,13 @@ for i, row in df_percentual.iterrows():
 if is_mobile:
     margin_top = 80
 else:
-    margin_top = 30
+    margin_top = 60
 
 legend_y = 1.15 if is_mobile else 1.05
 
 fig.update_layout(
     barmode="stack",
-    height=140 if is_mobile else 85,
+    height=140 if is_mobile else 115,
     margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
