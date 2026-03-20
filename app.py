@@ -26,7 +26,7 @@ st.markdown("""
 
 /* ===== AJUSTE GLOBAL RADIO (DESKTOP + MOBILE) ===== */
 div[role="radiogroup"] {
-    margin-bottom: -52px;
+    margin-bottom: -12px;
 }
 
 .stRadio > div {
@@ -452,14 +452,16 @@ for i, row in df_percentual.iterrows():
 # AJUSTE DA MARGEM
 if is_mobile:
     margin_top = 100
+    legend_y = 0.98
+    title_y = 0.90
 else:
     margin_top = 60
+    legend_y = 1.05
 
-legend_y = 1.15 if is_mobile else 1.05
 
 fig.update_layout(
     barmode="stack",
-    height=140 if is_mobile else 115,
+    height=150 if is_mobile else 115,
     margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
