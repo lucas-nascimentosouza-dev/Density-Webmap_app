@@ -459,7 +459,7 @@ legend_y = 1.15 if is_mobile else 1.05
 
 fig.update_layout(
     barmode="stack",
-    height=185 if is_mobile else 115,
+    height=115 if is_mobile else 115,
     margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
@@ -504,13 +504,13 @@ st.markdown(
 
 st.write("")  # Espaço entre o rodapé e os logos
 
-col_space1, col1, col2, col3, col_space2 = st.columns([3.9,0.7,0.7,0.7,0.1])
+col_space1, col1, col2, col3, col_space2 = st.columns([5.99,1.6,1.6,1.6,0.01])
 
 with col1:
     st.image("LOGO_NAIA.jpg", width=150)
 
 with col2:
-    st.image("LOGO_UNESP_preto.png", width=150)
+    st.image("LOGO_UNESP_V2.png", width=150)
 
 with col3:
     st.image("LOGO_SMADS_2.jpeg", width=150)
