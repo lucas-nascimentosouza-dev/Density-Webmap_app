@@ -42,7 +42,7 @@ div[role="radiogroup"] {
 
     /* Ajuste específico mobile (menos agressivo) */
     div[role="radiogroup"] {
-        margin-bottom: -4px;
+        margin-bottom: -12px;
     }
 
     /* Remove botões do Plotly */
@@ -452,7 +452,7 @@ for i, row in df_percentual.iterrows():
 # AJUSTE DA MARGEM
 if is_mobile:
     margin_top = 100
-    legend_y = 0.98
+    legend_y = 1.05
     title_y = 0.90
 else:
     margin_top = 60
