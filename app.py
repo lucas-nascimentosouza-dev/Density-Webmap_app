@@ -454,7 +454,7 @@ for i, row in df_percentual.iterrows():
     )
 # AJUSTE DA MARGEM
 if is_mobile:
-    margin_top = 80
+    margin_top = 90
     legend_y = 0.97
     title_y = 0.90
 else:
