@@ -42,11 +42,11 @@ div[role="radiogroup"] {
 
     /* Ajuste específico mobile (menos agressivo) */
     div[role="radiogroup"] {
-        margin-bottom: -12px;
+        margin-bottom: -14px;
     }
             
     .stRadio {
-    margin-bottom: -6px;
+    margin-bottom: -8px;
 }
     /* Remove botões do Plotly */
     .modebar {
@@ -454,8 +454,8 @@ for i, row in df_percentual.iterrows():
     )
 # AJUSTE DA MARGEM
 if is_mobile:
-    margin_top = 40
-    legend_y = 0.98
+    margin_top = 60
+    legend_y = 0.97
     title_y = 0.90
 else:
     margin_top = 60
@@ -464,7 +464,7 @@ else:
 
 fig.update_layout(
     barmode="stack",
-    height=120 if is_mobile else 115,
+    height=105 if is_mobile else 115,
     margin=dict(l=10, r=10, t=margin_top, b=20),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
