@@ -465,7 +465,7 @@ else:
 fig.update_layout(
     barmode="stack",
     height=105 if is_mobile else 115,
-    margin=dict(l=10, r=10, t=margin_top, b=-20),
+    margin=dict(l=10, r=10, t=margin_top, b=0),
     title=titulo,
     xaxis=dict(range=[0, 100], showticklabels=False),
     yaxis=dict(showticklabels=False),
