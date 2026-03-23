@@ -46,7 +46,7 @@ div[role="radiogroup"] {
     }
             
     .stRadio {
-    margin-bottom: -14px;
+    margin-bottom: -4px;
 }
     /* Remove botões do Plotly */
     .modebar {
@@ -454,7 +454,7 @@ for i, row in df_percentual.iterrows():
     )
 # AJUSTE DA MARGEM
 if is_mobile:
-    margin_top = 60
+    margin_top = 150
     legend_y = 0.97
     title_y = 0.90
 else:
