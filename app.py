@@ -46,7 +46,7 @@ div[role="radiogroup"] {
     }
             
     .stRadio {
-    margin-bottom: -8px;
+    margin-bottom: -1px;
 }
     /* Remove botões do Plotly */
     .modebar {
