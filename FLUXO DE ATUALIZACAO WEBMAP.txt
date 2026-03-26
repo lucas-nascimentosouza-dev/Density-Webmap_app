@@ -1,0 +1,135 @@
+FLUXO DE ATUALIZAÇÃO DO APP
+
+🧠 FLUXO PADRÃO
+🔁 Sempre que atualizar seu projeto Python e quiser atualizar o Render
+
+Vou montar como um roteiro fixo 👇
+
+✅ PASSO 1 — Fazer alterações no projeto
+
+Edite normalmente:
+
+app.py
+
+requirements.txt
+
+qualquer outro arquivo
+
+Salve tudo.
+
+✅ PASSO 2 — Verificar se você está na pasta correta
+
+No terminal:
+
+pwd
+
+
+ou no Windows:
+
+cd
+
+
+Confirme que está dentro da pasta do projeto
+(onde está o app.py).
+
+✅ PASSO 3 — Verificar a branch
+git branch
+
+
+Se aparecer:
+
+* master
+
+
+Então você SEMPRE vai dar push para master.
+
+⚠️ O Render precisa estar configurado para essa mesma branch.
+
+✅ PASSO 4 — Atualizar o repositório
+
+Sempre use esse bloco:
+
+git add .
+git commit -m "descreva aqui o que você alterou"
+git push
+
+
+Exemplo real:
+
+git add .
+git commit -m "atualizacao 18"
+git push
+
+
+
+
+⚡ Como você já usou -u origin master antes, agora pode usar só git push.
+
+✅ PASSO 5 — Render faz deploy automático
+
+Depois do git push:
+
+Vá no Render
+
+Entre no seu serviço
+
+Veja em Events / Logs
+
+Aguarde:
+
+Deploy started
+Build successful
+Deploy successful
+
+
+Pronto 🚀
+
+📌 RESUMO ULTRA SIMPLES
+
+Toda vez que alterar algo:
+
+git add .
+git commit -m "mensagem"
+git push
+
+
+Só isso.
+
+💡 DICA IMPORTANTE
+
+Se você alterar o requirements.txt:
+
+O Render vai reinstalar tudo
+
+O build pode demorar um pouco mais
+
+É normal
+
+LEGENDA RELATIVA
+
+fig.update_layout(
+    margin=dict(l=0, r=0, t=0, b=0),
+
+    coloraxis=dict(
+        cmin=0,
+        cmax=df["quantidade"].max(),
+        colorscale="Inferno",
+        colorbar=dict(
+            title="Intensidade",
+            tickmode="array",
+            tickvals=[0, 0.5, 1],
+            ticktext=["Baixa", "Média", "Alta"],
+            thickness=18,
+            len=0.75,
+            x=1.01,
+            xanchor="left",
+            y=0.5
+        )
+    )
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)

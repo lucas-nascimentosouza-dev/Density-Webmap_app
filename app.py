@@ -157,6 +157,8 @@ def carregar_dados():
 # ===============================
 df = carregar_dados()
 
+
+
 # MAPA
 fig = px.density_map(
     df,
@@ -165,6 +167,7 @@ fig = px.density_map(
     map_style="white-bg",
     z="quantidade",
     radius=12,
+    opacity=0.9,
     zoom=12,
     color_continuous_scale="Inferno",
 )
@@ -173,6 +176,31 @@ fig.update_layout(
     margin=dict(l=0, r=0, t=0, b=0),
     height=500
 )
+
+# SETA DO NORTE
+import base64
+
+def carregar_imagem_base64(caminho):
+    with open(caminho, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+img_base64 = carregar_imagem_base64("seta_norte_wing.png")
+
+fig.add_layout_image(
+    dict(
+        source=f"data:image/png;base64,{img_base64}",
+        xref="paper",
+        yref="paper",
+        x=0.02,
+        y=0.98,
+        sizex=0.15,   # aumenta aqui (proporcional)👈
+        sizey=0.15,   # aumenta aqui (proporcional)👈
+        xanchor="left",
+        yanchor="top",
+        layer="above"
+    )
+)
+
 
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
 
@@ -232,7 +260,7 @@ else:
         ticktext=["Baixa", "Média", "Alta"],
         x=1.00,
         xanchor="left",
-        y=0.5
+        y=0.55
     )
 
 fig.update_layout(
@@ -249,6 +277,85 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 
+# BARRA DE ESCALA DINÂMICA (JS INJETADO) - CÁLCULO DE DISTÂNCIA REAL (FÓRMULA GIS) COM BASE NO ZOOM E LATITUDE DO MAPA 
+import streamlit.components.v1 as components
+
+azul_marinho = "#1f4e79"
+
+components.html(f"""
+<script>
+    const AZUL_MARINHO = "{azul_marinho}";
+    
+    function injectScaleBar() {{
+        // 1. Localiza o mapa do Plotly no Streamlit
+        const plotEl = window.parent.document.querySelector('.js-plotly-plot');
+        if (!plotEl) return false;
+
+        // 2. Cria o elemento da régua se não existir
+        let container = window.parent.document.getElementById('dynamic-gis-scale');
+        if (!container) {{
+            container = window.parent.document.createElement('div');
+            container.id = 'dynamic-gis-scale';
+            container.style.cssText = `
+                position: absolute;
+                bottom: 5px; /* DESCIDINHA: De 20px para 5px para afastar da legenda */
+                right: 180px; /* JOGUEI MAIS pxs PRA ESQUERDA: Desse jeito ficou dentro do mapa */
+                z-index: 1000;
+                padding: 6px 12px;
+                background: #f8f9fa; 
+                border: 1px solid #c7ced8; 
+                border-radius: 8px; 
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                pointer-events: none;
+                font-family: sans-serif;
+                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+            `;
+            
+            container.innerHTML = `
+                <div style="color: #2C3E50; font-size: 11px; text-transform: none !important; font-weight: bold; margin-bottom: 2px; opacity: 0.9;">Escala</div>
+                <div id="gis-label" style="color: ${{AZUL_MARINHO}}; font-weight: bold; font-size: 13px; margin-bottom: 4px;">Calculando...</div>
+                <div style="width: 80px; height: 5px; background: ${{AZUL_MARINHO}}; border-radius: 3px;"></div>
+            `;
+            
+            // INJETA DENTRO DO MAPA
+            plotEl.appendChild(container);
+        }}
+
+        const label = window.parent.document.getElementById('gis-label');
+
+        // 3. Função de Cálculo GIS
+        const updateValue = () => {{
+            const layout = plotEl.layout.map || plotEl.layout.mapbox;
+            if (layout && layout.zoom) {{
+                const zoom = layout.zoom;
+                const lat = layout.center ? layout.center.lat : -22.9; // Default Ourinhos
+                
+                // Fórmula: Metros por pixel (barra de 80px)
+                const metersPerPx = (156543.03 * Math.cos(lat * Math.PI / 180)) / Math.pow(2, zoom);
+                const totalMeters = metersPerPx * 80;
+
+                if (totalMeters >= 1000) {{
+                    label.innerText = (totalMeters / 1000).toFixed(2) + " km";
+                }} else {{
+                    label.innerText = Math.round(totalMeters) + " m";
+                }}
+            }}
+        }};
+
+        // 4. Escuta o Zoom em tempo real
+        plotEl.on('plotly_relayout', updateValue);
+        updateValue(); // Chama a primeira vez
+        return true;
+    }}
+
+    // Tenta injetar até que o mapa esteja carregado
+    const timer = setInterval(() => {{
+        if (injectScaleBar()) clearInterval(timer);
+    }}, 500);
+</script>
+""", height=0)
 
 from io import BytesIO
 
