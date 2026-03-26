@@ -201,7 +201,6 @@ fig.add_layout_image(
     )
 )
 
-
 # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
 
 fig.update_layout(
@@ -298,7 +297,7 @@ components.html(f"""
             
             // Lógica de detecção de tela
             const isMobile = window.parent.innerWidth <= 768;
-            const rightPos = isMobile ? "3px" : "175px";
+            const rightPos = isMobile ? "3px" : "173px";
             const bottomPos = isMobile ? "15px" : "5px";
 
             container.style.cssText = `
