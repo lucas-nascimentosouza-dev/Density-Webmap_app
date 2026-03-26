@@ -57,7 +57,7 @@ git push
 Exemplo real:
 
 git add .
-git commit -m "atualizacao 18"
+git commit -m "atualizacao 21"
 git push
 
 

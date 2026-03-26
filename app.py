@@ -286,48 +286,40 @@ components.html(f"""
 <script>
     const AZUL_MARINHO = "{azul_marinho}";
     
-    function injectScaleBar() {{
+    function injectScaleBar() {{ // <--- Chave aberta corretamente aqui
         const plotEl = window.parent.document.querySelector('.js-plotly-plot');
         if (!plotEl) return false;
 
         let container = window.parent.document.getElementById('dynamic-gis-scale');
         
         if (!container) {{
-            // Criamos a folha de estilo para gerenciar Desktop vs Mobile
-            const style = window.parent.document.createElement('style');
-            style.innerHTML = `
-                #dynamic-gis-scale {{
-                    position: absolute;
-                    bottom: 5px;
-                    right: 175px; /* POSIÇÃO DESKTOP */
-                    z-index: 1000;
-                    padding: 6px 12px;
-                    background: #f8f9fa; 
-                    border: 1px solid #c7ced8; 
-                    border-radius: 8px; 
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    pointer-events: none;
-                    font-family: sans-serif;
-                    box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-                }}
-
-                /* AJUSTE PARA MOBILE (Telas menores que 768px) */
-                @media (max-width: 768px) {{
-                    #dynamic-gis-scale {{
-                        right: 15px !important; /* No mobile ele volta para o canto */
-                        bottom: 10px !important;
-                    }}
-                }}
-            `;
-            window.parent.document.head.appendChild(style);
-
             container = window.parent.document.createElement('div');
             container.id = 'dynamic-gis-scale';
             
+            // Lógica de detecção de tela
+            const isMobile = window.parent.innerWidth <= 768;
+            const rightPos = isMobile ? "20px" : "175px";
+            const bottomPos = isMobile ? "15px" : "5px";
+
+            container.style.cssText = `
+                position: absolute;
+                bottom: ${{bottomPos}};
+                right: ${{rightPos}};
+                z-index: 99999;
+                padding: 6px 12px;
+                background: #f8f9fa; 
+                border: 1px solid #c7ced8; 
+                border-radius: 8px; 
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                pointer-events: none;
+                font-family: sans-serif;
+                box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+            `;
+            
             container.innerHTML = `
-                <div style="color: #1A1A1A; font-size: 11px; text-transform: none !important; font-weight: bold; margin-bottom: 2px; opacity: 0.9;">Escala</div>
+                <div style="color: #2C3E50; font-size: 11px; font-weight: bold; margin-bottom: 2px; text-transform: none !important;">Escala</div>
                 <div id="gis-label" style="color: ${{AZUL_MARINHO}}; font-weight: bold; font-size: 13px; margin-bottom: 4px;">Calculando...</div>
                 <div style="width: 80px; height: 5px; background: ${{AZUL_MARINHO}}; border-radius: 3px;"></div>
             `;
@@ -345,18 +337,16 @@ components.html(f"""
                 const metersPerPx = (156543.03 * Math.cos(lat * Math.PI / 180)) / Math.pow(2, zoom);
                 const totalMeters = metersPerPx * 80;
 
-                if (totalMeters >= 1000) {{
-                    label.innerText = (totalMeters / 1000).toFixed(2) + " km";
-                }} else {{
-                    label.innerText = Math.round(totalMeters) + " m";
-                }}
+                label.innerText = totalMeters >= 1000 
+                    ? (totalMeters / 1000).toFixed(2) + " km" 
+                    : Math.round(totalMeters) + " m";
             }}
-        }};
+        }}; // <--- Chave do updateValue corrigida
 
         plotEl.on('plotly_relayout', updateValue);
         updateValue();
         return true;
-    }}
+    }} // <--- Chave da função principal corrigida
 
     const timer = setInterval(() => {{
         if (injectScaleBar()) clearInterval(timer);
