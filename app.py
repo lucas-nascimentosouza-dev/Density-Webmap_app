@@ -277,7 +277,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 
-# BARRA DE ESCALA DINÂMICA (JS INJETADO) - CÁLCULO DE DISTÂNCIA REAL (FÓRMULA GIS) COM BASE NO ZOOM E LATITUDE DO MAPA 
+# BARRA DE ESCALA DINÂMICA (JS INJETADO) - AJUSTADO PARA MOBILE E DESKTOP
 import streamlit.components.v1 as components
 
 azul_marinho = "#1f4e79"
@@ -287,52 +287,61 @@ components.html(f"""
     const AZUL_MARINHO = "{azul_marinho}";
     
     function injectScaleBar() {{
-        // 1. Localiza o mapa do Plotly no Streamlit
         const plotEl = window.parent.document.querySelector('.js-plotly-plot');
         if (!plotEl) return false;
 
-        // 2. Cria o elemento da régua se não existir
         let container = window.parent.document.getElementById('dynamic-gis-scale');
+        
         if (!container) {{
+            // Criamos a folha de estilo para gerenciar Desktop vs Mobile
+            const style = window.parent.document.createElement('style');
+            style.innerHTML = `
+                #dynamic-gis-scale {{
+                    position: absolute;
+                    bottom: 5px;
+                    right: 175px; /* POSIÇÃO DESKTOP */
+                    z-index: 1000;
+                    padding: 6px 12px;
+                    background: #f8f9fa; 
+                    border: 1px solid #c7ced8; 
+                    border-radius: 8px; 
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    pointer-events: none;
+                    font-family: sans-serif;
+                    box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+                }}
+
+                /* AJUSTE PARA MOBILE (Telas menores que 768px) */
+                @media (max-width: 768px) {{
+                    #dynamic-gis-scale {{
+                        right: 15px !important; /* No mobile ele volta para o canto */
+                        bottom: 10px !important;
+                    }}
+                }}
+            `;
+            window.parent.document.head.appendChild(style);
+
             container = window.parent.document.createElement('div');
             container.id = 'dynamic-gis-scale';
-            container.style.cssText = `
-                position: absolute;
-                bottom: 5px; /* DESCIDINHA: De 20px para 5px para afastar da legenda */
-                right: 50px; /* JOGUEI MAIS pxs PRA ESQUERDA: Desse jeito ficou dentro do mapa */
-                z-index: 1000;
-                padding: 6px 12px;
-                background: #f8f9fa; 
-                border: 1px solid #c7ced8; 
-                border-radius: 8px; 
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                pointer-events: none;
-                font-family: sans-serif;
-                box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
-            `;
             
             container.innerHTML = `
-                <div style="color: #2C3E50; font-size: 11px; text-transform: none !important; font-weight: bold; margin-bottom: 2px; opacity: 0.9;">Escala</div>
+                <div style="color: #1A1A1A; font-size: 11px; text-transform: none !important; font-weight: bold; margin-bottom: 2px; opacity: 0.9;">Escala</div>
                 <div id="gis-label" style="color: ${{AZUL_MARINHO}}; font-weight: bold; font-size: 13px; margin-bottom: 4px;">Calculando...</div>
                 <div style="width: 80px; height: 5px; background: ${{AZUL_MARINHO}}; border-radius: 3px;"></div>
             `;
             
-            // INJETA DENTRO DO MAPA
             plotEl.appendChild(container);
         }}
 
         const label = window.parent.document.getElementById('gis-label');
 
-        // 3. Função de Cálculo GIS
         const updateValue = () => {{
             const layout = plotEl.layout.map || plotEl.layout.mapbox;
             if (layout && layout.zoom) {{
                 const zoom = layout.zoom;
-                const lat = layout.center ? layout.center.lat : -22.9; // Default Ourinhos
-                
-                // Fórmula: Metros por pixel (barra de 80px)
+                const lat = layout.center ? layout.center.lat : -22.9;
                 const metersPerPx = (156543.03 * Math.cos(lat * Math.PI / 180)) / Math.pow(2, zoom);
                 const totalMeters = metersPerPx * 80;
 
@@ -344,13 +353,11 @@ components.html(f"""
             }}
         }};
 
-        // 4. Escuta o Zoom em tempo real
         plotEl.on('plotly_relayout', updateValue);
-        updateValue(); // Chama a primeira vez
+        updateValue();
         return true;
     }}
 
-    // Tenta injetar até que o mapa esteja carregado
     const timer = setInterval(() => {{
         if (injectScaleBar()) clearInterval(timer);
     }}, 500);
@@ -435,7 +442,8 @@ with info_col:
        <div style="font-size:26px; font-weight:700; color:#333;">
             {total_pessoas} <strong>Registros analisados</strong>
         </div>
-
+        
+    <div style="text-align: justify; hyphens: auto;">
        <div style="font-size:16px; font-weight:400; color:#666;">
             O mapa apresenta intensidade relativa de concentração espacial, com registros <strong>acumulativos de 90 dias </strong> conforme as abordagens são realizadas no município.
             Assim, o produto final é o mapa com a "mancha de calor" com incidência dos pontos onde as abordagens são registras num período de tempo (90 dias).
