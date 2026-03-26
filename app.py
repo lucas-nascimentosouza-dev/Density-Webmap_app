@@ -299,7 +299,7 @@ components.html(f"""
             container.style.cssText = `
                 position: absolute;
                 bottom: 5px; /* DESCIDINHA: De 20px para 5px para afastar da legenda */
-                right: 180px; /* JOGUEI MAIS pxs PRA ESQUERDA: Desse jeito ficou dentro do mapa */
+                right: 50px; /* JOGUEI MAIS pxs PRA ESQUERDA: Desse jeito ficou dentro do mapa */
                 z-index: 1000;
                 padding: 6px 12px;
                 background: #f8f9fa; 
