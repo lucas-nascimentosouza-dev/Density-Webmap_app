@@ -298,7 +298,7 @@ components.html(f"""
             
             // Lógica de detecção de tela
             const isMobile = window.parent.innerWidth <= 768;
-            const rightPos = isMobile ? "0px" : "175px";
+            const rightPos = isMobile ? "2px" : "175px";
             const bottomPos = isMobile ? "15px" : "5px";
 
             container.style.cssText = `
