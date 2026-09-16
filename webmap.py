@@ -78,8 +78,13 @@ div[role="radiogroup"] {
 # ===============================
 # CONFIGURAÇÕES
 # ===============================
-URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSarjsfOxs3BgjK1sF8FWv8ExKj34P3k2AgjuC-4XKhrwK7xrjorPxCWeUmA4Z4JtKD_btojUjN8ZvS/pub?output=csv"
+URL_ABORDAGENS = "https://docs.google.com/spreadsheets/d/1-yYDDiqyAJ_oonv-0rL3p5_Z6WI-kUhm6E6n_BkyQfI/export?format=csv&gid=0"
+
+URL_PESSOAS = "https://docs.google.com/spreadsheets/d/1-yYDDiqyAJ_oonv-0rL3p5_Z6WI-kUhm6E6n_BkyQfI/export?format=csv&gid=1396205253"
+
 TEMPO_ATUALIZACAO = 60  # segundos
+
+CARTO_API_KEY = st.secrets["CARTO_API_KEY"]
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -115,9 +120,20 @@ st.write("Mapeamento diário via abordagem das pessoas em situação de rua. E c
 # ===============================
 @st.cache_data(ttl=TEMPO_ATUALIZACAO)
 def carregar_dados():
-    df = pd.read_csv(URL_CSV)
 
-    # Correção na planilha de tipos na latitude "." e ","
+    # =============================
+    # ABA ABORDAGENS
+    # =============================
+    df = pd.read_csv(URL_ABORDAGENS)
+
+    # Limpeza dos nomes das colunas
+    df.columns = (
+        df.columns
+        .str.strip()
+        .str.lower()
+    )
+
+    # Latitude
     df["latitude"] = (
         df["latitude"]
         .astype(str)
@@ -125,6 +141,7 @@ def carregar_dados():
         .astype(float)
     )
 
+    # Longitude
     df["longitude"] = (
         df["longitude"]
         .astype(str)
@@ -132,47 +149,88 @@ def carregar_dados():
         .astype(float)
     )
 
-    df["quantidade"] = df["quantidade"].astype(float)
+    # Quantidade
+    df["quantidade"] = (
+        pd.to_numeric(df["quantidade"], errors="coerce")
+        .fillna(1)
+    )
 
-# limpeza nos dados da planilha (p/ padrão migrante Sim ou Não)
+    # Migrante
     df["migrante"] = (
-    df["migrante"]
-    .astype(str)
-    .str.strip()
-)
+        df["migrante"]
+        .astype(str)
+        .str.strip()
+    )
 
     df["migrante"] = df["migrante"].replace({
-    "SIM": "Sim",
-    "sim": "Sim",
-    "Sim": "Sim",
-    "NÃO": "Não",
-    "NAO": "Não",
-    "Não": "Não",
-    "nao": "Não"
-})
+        "SIM": "Sim",
+        "sim": "Sim",
+        "Sim": "Sim",
+        "NÃO": "Não",
+        "NAO": "Não",
+        "Não": "Não",
+        "nao": "Não"
+    })
+
     return df
+
+
+# =============================
+# CARREGAR PESSOAS
+# =============================
+@st.cache_data(ttl=TEMPO_ATUALIZACAO)
+def carregar_pessoas():
+
+    pessoas = pd.read_csv(URL_PESSOAS)
+
+    pessoas.columns = (
+        pessoas.columns
+        .str.strip()
+        .str.lower()
+    )
+
+    return pessoas
     
 # ===============================
 # CARREGAR DADOS
 # ===============================
 df = carregar_dados()
-
+pessoas = carregar_pessoas()
 
 
 # MAPA
-fig = px.density_map(
-    df,
-    lat="latitude",
-    lon="longitude",
-    map_style="white-bg",
-    z="quantidade",
-    radius=12,
-    opacity=0.9,
-    zoom=12,
-    color_continuous_scale="Inferno",
+
+fig = go.Figure(
+    go.Densitymap(
+        lat=df["latitude"],
+        lon=df["longitude"],
+        z=df["quantidade"],
+        radius=12,
+        coloraxis="coloraxis",
+        opacity=0.9
+    )
 )
 
 fig.update_layout(
+    map=dict(
+        style="white-bg",
+        zoom=12,
+        center=dict(
+            lat=-22.98,
+            lon=-49.87
+        ),
+
+        # CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
+        layers=[
+            {
+                "below": "traces",
+                "sourcetype": "raster",
+                "source": [
+                    f"https://basemaps.cartocdn.com/rastertiles/light_all/{{z}}/{{x}}/{{y}}.png?key={CARTO_API_KEY}"
+                ]
+            }
+        ]
+    ),
     margin=dict(l=0, r=0, t=0, b=0),
     height=500
 )
@@ -201,20 +259,6 @@ fig.add_layout_image(
     )
 )
 
-# CORREÇÃO DO BASEMAP QUE ESTAVA SOBREPONDO AS VIAS SOB O HEATMAP
-
-fig.update_layout(
-    map_style="white-bg",
-    map_layers=[
-        {
-            "below": "traces",
-            "sourcetype": "raster",
-            "source": [
-                "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-            ]
-        }
-    ]
-)
 
 # MOSTRAR OS DADOS AO PASSAR O MOUSE NO MAPA (ISTO É UM SCATTERMAP INVISÍVEL)
 
@@ -234,8 +278,10 @@ fig.add_scattermap(
 )
 
 # ==============================
-# LEGENDA RELATIVA mobile  x desktop
+# LEGENDA DE INTENSIDADE RELATIVA mobile  x desktop
 # ==============================
+
+valor_maximo = df["quantidade"].max()
 
 if is_mobile:
 
@@ -244,8 +290,16 @@ if is_mobile:
         thickness=9,
         len=0.40,
         tickmode="array",
-        tickvals=[0, 0.5, 1],
-        ticktext=["Baixa", "Média", "Alta"],
+        tickvals=[
+            0,
+            valor_maximo / 2,
+            valor_maximo
+        ],
+        ticktext=[
+            "Baixa",
+            "Média",
+            "Alta"
+        ],
     )
 
 else:
@@ -255,8 +309,16 @@ else:
         thickness=16,
         len=0.68,
         tickmode="array",
-        tickvals=[0, 0.5, 1],
-        ticktext=["Baixa", "Média", "Alta"],
+        tickvals=[
+            0,
+            valor_maximo / 2,
+            valor_maximo
+        ],
+        ticktext=[
+            "Baixa",
+            "Média",
+            "Alta"
+        ],
         x=1.00,
         xanchor="left",
         y=0.55
@@ -413,37 +475,64 @@ with info_col:
 
     total_pessoas = int(df["quantidade"].sum())
 
-    st.markdown(
-    f"""
-    <div style="
-        border:1px solid #f0f0f0;
-        border-radius:10px;
-        padding:15px;
-        background-color:#fafafa;
-        margin-top:20px;
-        max-width:900px;
-    ">
-        <h4 style="display:flex; align-items:center; gap:10px;">
-            <img src="https://raw.githubusercontent.com/lucas-nascimentosouza-dev/MEUS_SVGs/refs/heads/main/electoral_17977484.svg" width="56">
-            Sobre os dados
-        </h4>
+    total_cadastradas = (
+        pessoas["id_pessoa"]
+        .astype(str)
+        .str.strip()
+        .replace("", pd.NA)
+        .dropna()
+        .nunique()
+    )
 
-       <div style="font-size:26px; font-weight:700; color:#333;">
-            {total_pessoas} <strong>Registros analisados</strong>
-        </div>
-        
-    <div style="text-align: justify; hyphens: auto;">
-       <div style="font-size:16px; font-weight:400; color:#666;">
-            O mapa apresenta intensidade relativa de concentração espacial, com registros <strong>acumulativos de 90 dias </strong> conforme as abordagens são realizadas no município.
-            Assim, o produto final é o mapa com a "mancha de calor" com incidência dos pontos onde as abordagens são registras num período de tempo (90 dias).
-        </div>
-        <div style="font-size:16px; font-weight:500; color:#666;">
-            Também é gerado os dados gráficos de perfil das pessoas identificadas. E os Migrantes - refere-se as pessoas que estão em viagem e no trecho de Ourinhos. Essas pessoas estão de passagem pela cidade.
-        </div>
-    </div>    
-    """,
-    unsafe_allow_html=True
-)
+    st.markdown(
+        f"""
+<div style="border:1px solid #f0f0f0; border-radius:10px; padding:15px; background-color:#fafafa; margin-top:20px; max-width:900px;">
+
+<h4 style="margin-top:0;">
+<img src="https://raw.githubusercontent.com/lucas-nascimentosouza-dev/MEUS_SVGs/refs/heads/main/electoral_17977484.svg" width="56" style="vertical-align:middle; margin-right:10px;">
+Sobre os dados
+</h4>
+
+<table style="width:100%; margin-bottom:15px;">
+<tr>
+
+<td style="width:50%; vertical-align:top;">
+<div style="font-size:28px; font-weight:700; color:#333;">
+{total_pessoas}
+</div>
+<div style="font-size:15px; font-weight:620; color:#666;">
+Registros total de abordagens
+</div>
+</td>
+
+<td style="width:50%; vertical-align:top; border-left:1px solid #ddd; padding-left:35px;">
+<div style="font-size:28px; font-weight:700; color:#333;">
+{total_cadastradas}
+</div>
+<div style="font-size:15px; font-weight:620; color:#666;">
+Quantidade de pessoas cadastradas (sem duplicidade)
+</div>
+</td>
+
+</tr>
+</table>
+
+<div style="text-align:justify; font-size:16px; font-weight:400; color:#666;">
+O mapa apresenta intensidade relativa de concentração espacial, com registros <strong>acumulativos de 90 dias</strong> conforme as abordagens são realizadas no município.
+Assim, o produto final é o mapa de "mancha de calor" com a intensidade dos pontos onde as abordagens são registradas num período de tempo (90 dias).
+Enquanto os registros representam o número total de abordagens realizadas, podendo uma mesma pessoa ser registrada em diferentes pontos de abordagens ao longo do período, o número de pessoas cadastradas representa a quantidade de indivíduos, sem duplicidade.
+</div>
+
+<div style="text-align:justify; font-size:16px; font-weight:500; color:#666; margin-top:8px;">
+Também são gerados dados gráficos de perfil das pessoas identificadas.
+Os migrantes referem-se às pessoas que estão em viagem e no trecho de Ourinhos.
+Essas pessoas estão de passagem pela cidade.
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
 
 # ESPAÇO (NO MOBILE) ENTRE O BLOCO DE INFORMAÇÕES E O GRÁFICO DE BARRAS
 
