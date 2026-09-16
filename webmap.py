@@ -84,8 +84,7 @@ URL_PESSOAS = "https://docs.google.com/spreadsheets/d/1-yYDDiqyAJ_oonv-0rL3p5_Z6
 
 TEMPO_ATUALIZACAO = 60  # segundos
 
-import os
-CARTO_API_KEY = os.getenv("CARTO_API_KEY")
+CARTO_API_KEY = "cb1_3lcl_1_cbd50d77f703c1bb879abbaf"
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
